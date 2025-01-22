@@ -11,6 +11,7 @@ from datetime import datetime
 import requests
 from dotenv import load_dotenv
 
+from bank_statement import Bank_Statement
 
 load_dotenv()
 
@@ -71,7 +72,7 @@ class Cora_API():
     response_data = response.json()
 
     if response.status_code == 200:
-      return response_data['entries']
+      return Bank_Statement(response_data)
     else:
       return None
 
@@ -79,11 +80,11 @@ if __name__ == '__main__':
   test = Cora_API()
   extratos = test.GET_BANK_STATEMENT()
 
-  for extrato in extratos:
-    nome_cliente = extrato['transaction']['counterParty']['name']
-    tipo_transacao = extrato['type']
-    valor = locale.currency(float(extrato['amount']) / 100, grouping=True)
-    data_transacao = datetime.strptime(extrato['createdAt'], "%Y-%m-%dT%H:%M:%S+%f")
+  for extrato in extratos.entries:
+    nome_cliente = extrato.transaction.counterParty.name
+    tipo_transacao = extrato.transaction.type
+    valor = locale.currency(extrato.amount, grouping=True)
+    data_transacao = extrato.createdAt
 
     print(f'{data_transacao} {tipo_transacao} {nome_cliente} {valor}')
 
