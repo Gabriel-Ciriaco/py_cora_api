@@ -1,2 +1,4 @@
 .env
 certificates/
+.venv/
+__pycache__

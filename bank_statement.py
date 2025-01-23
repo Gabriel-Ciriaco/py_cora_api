@@ -35,6 +35,8 @@ class Header():
 
 class Entry():
   def __init__(self, entry: dict) -> None:
+    self.dict = entry
+
     self.id = str(entry['id'])
     self.type = str(entry['type'])
 
@@ -43,8 +45,13 @@ class Entry():
 
     self.transaction = Transaction(entry['transaction'])
 
+  def __str__(self):
+    return str(self.dict)
+
 class Bank_Statement():
   def __init__(self, statement: dict) -> None:
+    self.dict = statement
+
     self.start = StartEnd(statement['start'])
     self.end = StartEnd(statement['end'])
 
@@ -53,3 +60,6 @@ class Bank_Statement():
     self.aggregations = Aggregations(statement['aggregations'])
 
     self.header = Header(statement['header'])
+
+  def __str__(self):
+    return str(self.dict)
