@@ -31,15 +31,29 @@ class Cora_API():
     if not self.closed:
       self.__exit__()
 
-  def GET_BANK_STATEMENT(self, start_date: str = None, end_date: str = None) -> Union[Bank_Statement, None]:
+  def GET_BANK_STATEMENT(
+      self,
+      start_date: str = None,
+      end_date: str = None,
+      type: str = None,
+      transaction_type: str = None,
+      page: int = None,
+      per_page: int = None,
+      aggregation: bool = None
+    ) -> Union[Bank_Statement, None]:
     '''
       TO-DO: Usar programação assincrona aqui!
       Lidar com erro de páginação do request!
     '''
-    params = {}
-
-    if start_date: params['start'] = start_date
-    if end_date: params['end'] = end_date
+    params = {
+      'start': start_date,
+      'end': end_date,
+      'type': type,
+      'transaction_type': transaction_type,
+      'page': page,
+      'per_page': per_page,
+      'aggr': aggregation
+    }
 
     with self.handler as request:
       try:
