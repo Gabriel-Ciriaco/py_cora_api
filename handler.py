@@ -52,6 +52,8 @@ class Request_Handler():
     self.CERTIFICATES = ('./certificates/certificate.pem', './certificates/private-key.key')
 
     self.BASE_URL = url
+
+    self.is_updating_token = False
     self.__get_token__()
 
 
@@ -74,6 +76,9 @@ class Request_Handler():
     }
 
     try:
+      while self.is_updating_token:
+        pass
+
       return response_handler(
         requests.get(
           url=self.BASE_URL + endpoint,
@@ -87,6 +92,9 @@ class Request_Handler():
 
   def post(self, endpoint: str = None, params: dict = None, data: dict = None):
     try:
+      while self.is_updating_token:
+        pass
+
       return response_handler(
         requests.post(
           url=self.BASE_URL + endpoint,
@@ -106,6 +114,9 @@ class Request_Handler():
         }
 
       response = self.post('/token', data=data)
+
+      self.is_updating_token = True
+
       self.auth = f"{response['token_type']} {response['access_token']}"
       self.__update_token__(response['expires_in'])
     except Request_Error as e:
@@ -113,4 +124,5 @@ class Request_Handler():
 
   def __update_token__(self, time_in_seconds: int) -> None:
     self.token_updater = threading.Timer(time_in_seconds, self.__get_token__)
+    self.is_updating_token = False
     self.token_updater.start()
