@@ -66,8 +66,9 @@ class Request_Handler():
       self.token_updater.cancel()
 
 
-  def get(self, endpoint: str = None, params: dict = None, data: dict = None) -> None:
-    req_id = str(uuid.uuid4()) # Unique ID for Idempotency
+  def get(self, endpoint: str = None, params: dict = None, data: dict = None, req_id: str = None) -> None:
+    if not req_id:
+      req_id = str(uuid.uuid4()) # Unique ID for Idempotency
 
     headers = {
       "Idempotency-Key": req_id,
@@ -88,7 +89,11 @@ class Request_Handler():
           cert=self.CERTIFICATES)
       )
     except Request_Error as e:
-      raise e
+      # Use idempotency only on 504 error
+      if e.code == 504:
+        self.get(endpoint=endpoint, params=params, data=data, req_id=req_id)
+      else:
+        raise e
 
   def post(self, endpoint: str = None, params: dict = None, data: dict = None):
     try:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import atexit
 
 from typing import Union
@@ -17,19 +18,28 @@ class Cora_API():
 
     print("[CORA_API]: Started connection.")
 
-  def __enter__(self):
+  def __enter__(self) -> Cora_API:
     return self
 
-  def __exit__(self, *args):
+  def __exit__(self, *args) -> None:
     if self.handler.token_updater:
       self.handler.token_updater.cancel()
 
     self.closed = True
     print("[CORA_API]: Closed Connection.")
 
-  def close(self):
+  def close(self) -> None:
     if not self.closed:
       self.__exit__()
+
+  def handle_response(self, identifier: str, e: Request_Error) -> None:
+    if e.message:
+      print(f"{identifier}: (Error Code: {e.code}) {e.message}")
+
+    if e.errors:
+      for error in e.errors:
+        print(f"{identifier}: (Error Code: {error['code']}) {error['message']}")
+
 
   def GET_BANK_STATEMENT(
       self,
@@ -61,13 +71,5 @@ class Cora_API():
 
         return Bank_Statement(response)
       except Request_Error as e:
-        identifier = "[GET_BANK_STATEMENT]"
-
-        if e.message:
-          print(f"{identifier}: (Error Code: {e.code}) {e.message}")
-
-        if e.errors:
-          for error in e.errors:
-            print(f"{identifier}: (Error Code: {error['code']}) {error['message']}")
-
+        self.handle_response("[GET_BANK_STATEMENT]", e)
         return None
