@@ -61,7 +61,7 @@ class Cora_API():
       'type': type,
       'transaction_type': transaction_type,
       'page': page,
-      'per_page': per_page,
+      'perPage': per_page,
       'aggr': aggregation
     }
 
